@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extinction Escape</title>
+    <!-- Progressive Web App manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff8c00">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <!-- Navigation between game and sanctuary views -->
+    <nav class="nav">
+      <button id="tab-game" class="nav-button active">Game</button>
+      <!-- Sanctuary view replaces the old Safe Haven -->
+      <button id="tab-haven" class="nav-button">Sanctuary</button>
+      <!-- Changelog tab for release notes -->
+      <button id="tab-changelog" class="nav-button">Changelog</button>
+      <!-- Install App button appears when the PWA install prompt is available -->
+      <button id="install-app" class="nav-button hidden">Install App</button>
+    </nav>
+
+    <!-- Game view -->
+    <div id="game-view">
+      <header class="hero">
+        <h1>Extinction Escape</h1>
+        <p>Rescue animals, build your fleet and save the world!</p>
+      </header>
+      <main>
+        <section class="status">
+          <div class="stat"><strong>Coins:</strong> <span id="coins">0</span></div>
+          <div class="stat"><strong>Animals Saved:</strong> <span id="animals-saved">0</span></div>
+          <div class="stat"><strong>Rescue Rate:</strong> <span id="rate">0</span> animals/sec</div>
+        </section>
+        <!-- Live event panel. Display the current world event and time remaining. Hidden if no event is active. -->
+        <section id="event-panel" class="event-panel hidden">
+          <h3 id="event-name">Event: None</h3>
+          <p id="event-time-left">--:--:--</p>
+        </section>
+        <!-- Mission panel -->
+        <section id="mission-panel" class="mission-panel">
+          <h2 id="mission-name">Mission: –</h2>
+          <div class="mission-stats">
+            <span>Time Left: <span id="mission-time">0</span>s</span>
+            <span>Animals At Risk: <span id="animals-at-risk">0</span></span>
+          </div>
+          <div class="progress-bar">
+            <div id="mission-progress" class="progress"></div>
+          </div>
+        </section>
+        <!-- Tasks panel -->
+        <section id="tasks-panel" class="tasks-panel">
+          <h2>Goals</h2>
+          <ul id="tasks-list"></ul>
+        </section>
+        <!-- Manual rescue button -->
+        <section class="manual">
+          <button id="manual-rescue" class="manual-button">Rescue +1</button>
+        </section>
+        <!-- Units list -->
+        <section class="units">
+          <h2>Rescue Units</h2>
+          <div id="units-container">
+            <!-- Units will be dynamically injected here -->
+          </div>
+        </section>
+
+        <!-- Upgrades list -->
+        <section class="upgrades">
+          <h2>Upgrades</h2>
+          <div id="upgrades-container">
+            <!-- Upgrades will be dynamically injected here -->
+          </div>
+        </section>
+
+        <!-- Reserve HQ for permits and prestige mechanics -->
+        <section class="hq">
+          <h2>Reserve HQ</h2>
+          <div class="hq-stats">
+            <div><strong>Permits:</strong> <span id="permits-count">0</span></div>
+            <div><strong>Lifetime Rescued:</strong> <span id="lifetime-saved">0</span></div>
+          </div>
+          <h3>Permits Shop</h3>
+          <div id="permits-container">
+            <!-- Permit upgrades will be dynamically injected here -->
+          </div>
+          <div class="prestige">
+            <button id="prestige-button" class="prestige-button">Found New Reserve</button>
+            <p id="prestige-info">Earn 0 new permits.</p>
+          </div>
+        </section>
+
+        <!-- Biomes section: unlock new biomes using permits -->
+        <section class="biomes">
+          <h2>New Biomes</h2>
+          <div id="biomes-container">
+            <!-- Biome unlock cards will be dynamically injected here -->
+          </div>
+        </section>
+
+        <!-- Achievements section -->
+        <section class="achievements">
+          <h2>Achievements</h2>
+          <ul id="achievements-list">
+            <!-- Achievements will be injected here -->
+          </ul>
+        </section>
+
+        <!-- Questline section -->
+        <section class="questline">
+          <h2>Questline: Rebuild the Reef</h2>
+          <div id="quest-content"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Sanctuary view (replacing Safe Haven): displays species progress cards -->
+    <div id="haven-view" class="hidden">
+      <header class="hero">
+        <h1>Sanctuary</h1>
+        <p>Watch your rescued species thrive and grow.</p>
+      </header>
+      <main>
+        <!-- Stats and tools for the Sanctuary -->
+        <div class="sanctuary-tools">
+          <div id="season-stats" class="season-stats">Season saved: 0 (Best: 0)</div>
+          <!-- Buttons and friend code field.  Save Image exports a snapshot, Share Code copies your best record, and Compare checks a friend’s code -->
+          <div class="sanctuary-actions">
+            <button id="save-sanctuary-image" class="save-image-button">Save Image</button>
+            <button id="export-friend-code" class="export-code-button">Share Code</button>
+            <input id="friend-code-input" class="friend-code-input" type="text" placeholder="Friend code">
+            <button id="import-friend-code" class="import-code-button">Compare</button>
+            <!-- Tip jar configuration: allow user to paste a tip/donation link -->
+            <input id="tip-link-input" class="tip-link-input" type="text" placeholder="Paste your tip link (optional)">
+            <button id="set-tip-link" class="set-tip-link-button">Set Tip Link</button>
+            <!-- Support button appears when a tip link is configured -->
+            <button id="support-button" class="support-button hidden">Support the Reserve</button>
+          </div>
+        </div>
+        <!-- Species cards view: grid of species progress cards -->
+        <section id="cards-section" class="sanctuary-cards">
+          <div id="cards-container" class="cards-container">
+            <!-- Species cards will be dynamically injected here -->
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Changelog view: shows version history and updates -->
+    <div id="changelog-view" class="hidden">
+      <header class="hero">
+        <h1>Changelog</h1>
+        <p>See what’s new in each release.</p>
+      </header>
+      <main>
+        <section class="changelog-section">
+          <h2>Release Notes</h2>
+          <ul id="changelog-list" class="changelog-list">
+            <!-- Changelog entries will be dynamically injected here -->
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 Extinction Escape • Prototype Build</p>
+    </footer>
+    <script src="script.js"></script>
+    <!-- Register service worker for PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          }).catch(function(error) {
+            console.log('Service Worker registration failed:', error);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
